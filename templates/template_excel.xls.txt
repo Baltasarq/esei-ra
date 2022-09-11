@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook
+   xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+   xmlns:o="urn:schemas-microsoft-com:office:office"
+   xmlns:x="urn:schemas-microsoft-com:office:excel"
+   xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+   xmlns:html="http://www.w3.org/TR/REC-html40">
+  <Styles>
+     <Style ss:ID="Default"><Font ss:Size="14" /></Style>
+     <Style ss:ID="HeaderStyle"><Font ss:Size="18" ss:Bold="1" /></Style>
+  </Styles>
+  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+    <Author>Esei-Ra</Author>
+    <Created>{{ current_time }}</Created>
+    <Company>ESEI</Company>
+    <Version>0.1</Version>
+  </DocumentProperties>
+  <Worksheet ss:Name="{{ day_of_week }}: {{ date.isoformat() }}">
+    <Table x:FullColumns="{{ (classrooms | length) + 1 }}" x:FullRows="{{ (hours | length) + 1 }}">
+      <!-- Header -->
+      <Row ss:StyleID="HeaderStyle">
+        <Cell><Data ss:Type="String">#</Data></Cell>
+        {% for classroom in classrooms %}
+            <Cell><Data ss:Type="String">{{ classroom.name }}</Data></Cell>
+        {% endfor %}
+      </Row>
+
+      <!-- Remaining rows (reserves per hour and classroom) -->
+      {% for hour in hours %}
+        {% set hour_index = loop.index0 %}
+        <Row>
+            <Cell><Data ss:StyleID="HeaderStyle" ss:Type="String">{{ hour.strftime("%02H:%02M") }}</Data></Cell>
+            {% for classroom in classrooms %}
+                {% set reserves_per_classroom = reserves[classroom.key] %}
+                <Cell><Data ss:Type="String">
+                    {%- for reserve in reserves_per_classroom[hour_index] %}
+                        {{ reserve.name }}
+                    {% endfor -%}
+                </Data></Cell>
+            {% endfor %}
+        </Row>
+      {% endfor %}
+    </Table>
+  </Worksheet>
+</Workbook>

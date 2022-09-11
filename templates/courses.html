@@ -1,0 +1,59 @@
+{% extends "skeleton.html" %}
+{% block content %}
+    <div id="dvActions" class="clsMenu">
+        <a href="#" onclick="window.location.href='/'">
+            <img height="32px" width="32px" src="/res/back.svg"
+                 class="styled-button"
+                 title="Volver" alt="Volver" />
+        </a>
+    </div>
+
+    <h2>Cursos</h2>
+    <table id="tblEntries">
+    {% for course in courses %}
+        <tr class="tblEntryRow">
+        <td>
+            <a href="#" onclick="window.location.href='/courses/delete?id={{ course.key.urlsafe() }}'">
+                <img width="16px" height="16px" alt="Borrar" title="Borrar" src="/res/delete.svg">
+            </a>
+        </td>
+        <td>
+            <a href="#" onclick="window.location.href='/courses/modify?id={{ course.key.urlsafe() }}'">
+                <img width="16px" height="16px" alt="Modificar" title="Modificar" src="/res/modify.svg">
+            </a>
+        </td>
+        {% include "course_entry.html" %}
+        </tr>
+    {% else %}
+        No hay cursos registrados.
+    {% endfor %}
+    </table>
+    <h2>Nuevo curso</h2>
+    <form id="frmCourse"
+          method="post"
+          action="/courses/manage">
+
+        <label for="edName">Nombre estudios: </label>
+        <input id="edName" name="edName" type="text" placeholder="nombre" required="required">
+
+        <br/>
+        <label for="edLevel">Nivel: </label>
+        <input id="edLevel" name="edLevel" type="number"
+               style="width:80px" min="1" value="1" required="required">
+
+        <br/>
+
+        <label for="edBkColor">Color de fondo </label>
+        <input type="color" id="edBkColor" name="edBkColor" required="required"
+            style="width: 80px" />
+
+        <br/>
+
+        <a href="#" onclick="frmCourse.submit()">
+            <img id="imgSubmit"
+                 height="32px" width="32px"
+                 src="/res/add.svg" class="styled-button"
+                 alt="Insertar" title="Insertar" />
+        </a>
+    </form>
+{% endblock %}

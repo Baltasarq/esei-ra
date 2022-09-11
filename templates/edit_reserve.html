@@ -1,0 +1,248 @@
+{% extends "skeleton.html" %}
+{% block content %}
+
+<script type="application/javascript">
+    function changeDatesTo(str_date_begin, str_date_end)
+    {
+        const edDateBegin = document.getElementById( "edDateBegin" );
+        const edDateEnd = document.getElementById( "edDateEnd" );
+
+        edDateBegin.value = str_date_begin;
+        edDateEnd.value = str_date_end;
+    }
+
+    function changeDates()
+    {
+        const period = document.getElementById( "edPeriod" ).value;
+
+        if ( period === "period1" ) {
+            changeDatesTo( "{{ year.period1_begin.isoformat() }}", "{{ year.period1_end.isoformat() }}" );
+        }
+        else
+        if ( period === "period2" ) {
+            changeDatesTo( "{{ year.period2_begin.isoformat() }}", "{{ year.period2_end.isoformat() }}" );
+        }
+
+        return;
+    }
+
+    function choosePeriod()
+    {
+        const EdPeriod = document.getElementById( "edPeriod" );
+
+        EdPeriod.value = "custom";
+
+        if ( {{ Reserve.str_from_date( reserve.date_begin ) }} == {{ Reserve.str_from_date( year.period1_begin ) }}
+          && {{ Reserve.str_from_date( reserve.date_end ) }} == {{ Reserve.str_from_date( year.period1_end ) }} )
+        {
+            EdPeriod.value = "period1";
+        }
+        else
+        if ( {{ Reserve.str_from_date( reserve.date_begin ) }} == {{ Reserve.str_from_date( year.period2_begin ) }}
+          && {{ Reserve.str_from_date( reserve.date_end ) }} == {{ Reserve.str_from_date( year.period2_end ) }} )
+        {
+            EdPeriod.value = "period2";
+        }
+
+        return;
+    }
+
+    function clearErrors()
+    {
+        const dvError = document.getElementById( "dvError" );
+
+        dvError.style.display = "hide";
+        dvError.innerHTML = "";
+    }
+
+    function showError(msg)
+    {
+        const dvError = document.getElementById( "dvError" );
+
+        dvError.innerHTML = "<p>" + msg + "</p>";
+        dvError.style.display = "block";
+    }
+
+    function chk()
+    {
+        let toret = true;
+        const strDateBegin = document.getElementById( "edDateBegin" ).value;
+        const strDateEnd = document.getElementById( "edDateEnd" ).value;
+        const strTimeBegin = document.getElementById( "edTimeBegin" ).value;
+        const strTimeEnd = document.getElementById( "edTimeEnd" ).value;
+        let strToday = new Date().toISOString();
+        strToday = strToday.substring( 0, strToday.indexOf("T") );
+
+        let dateBegin = null;
+        let dateEnd = null;
+        let timeBegin = null;
+        let timeEnd = null;
+
+        clearErrors();
+
+        // Parse
+        try {
+            dateBegin = new Date( strDateBegin + "T00:00:00Z" );
+            dateEnd = new Date( strDateEnd + "T00:00:00Z" );
+            timeBegin = new Date( strToday + "T" + strTimeBegin );
+            timeEnd = new Date( strToday + "T" + strTimeEnd );
+        } catch(e) {
+            toret = false;
+            showError( "Convirtiendo cadenas: " + e.toString() );
+        }
+
+        // Verify
+        if ( !( timeEnd > timeBegin ) ) {
+            showError( "Hora de final debe ser posterior al comienzo" );
+            toret = false;
+        }
+
+        if ( !( dateEnd > dateBegin ) ) {
+            showError( "Fecha final debe ser posterior al comienzo" );
+            toret = false;
+        }
+
+        return toret;
+    }
+
+    function chooseAccordingSubject()
+    {
+        const edName = document.getElementById( "edName" );
+        const edSubject = document.getElementById( "edSubject" );
+        const name = edName.value.trim().toLowerCase();
+
+        if ( name.trim().length > 0 ) {
+            for(var i = 0; i < edSubject.options.length; ++i) {
+                const opt = edSubject.options[ i ];
+
+                if (opt.text.toLowerCase().indexOf(name) >= 0) {
+                    edSubject.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        return;
+    }
+
+    window.onload = function() {
+        const edName = document.getElementById( "edName" );
+
+        edName.focus();
+        choosePeriod();
+    }
+</script>
+
+<h2>Reserva: {{ reserve.get_abbrev_form() }}</h2>
+<form id="frmEditReserve"
+      method="POST"
+      onsubmit="return chk()"
+      action="/reserves/modify?id={{ reserve.key.urlsafe() }}">
+
+    <label for="edName">Nombre </label>
+    <input type="text" id="edName" name="edName" required="required"
+            size="10"
+            value="{{ reserve.name }}"
+            placeholder="nombre"
+            oninput="chooseAccordingSubject()" />
+
+    <br/>
+
+    <label for="edWeekDay">Día de la semana </label>
+    <select id="edWeekDay" name="edWeekDay">
+        {% for dia in Reserve.WEEK_DAYS %}
+            <option value="{{ loop.index0 }}"
+                {% if loop.index0 == reserve.week_day %} selected {% endif %}>
+                {{ dia }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label for="edClassroom">Aula </label>
+    <select id="edClassroom" name="edClassroom">
+        {% for classroom in classrooms %}
+            <option value="{{ classroom.key.urlsafe() }}"
+                {% if classroom.key == classroom_of_reserve.key %} selected {% endif %}>
+                {{ classroom.name }} ({{ classroom.floor }}º {{ classroom.building }})
+            </option>
+        {% endfor %}
+    </select>
+
+    <br/>
+
+    <label for="edSubject">Asignatura </label>
+    <select id="edSubject" name="edSubject">
+        {% for subject in subjects %}
+            <option value="{{ subject.key.urlsafe() }}"
+                {% if subject.key == subject_of_reserve.key %} selected {% endif %}>
+                {{ subject.get_abbrev_form() }} ({{ subject.name }})
+            </option>
+        {% endfor %}
+    </select>
+
+    <br/>
+
+    <label for="edPeriod">{{ year.period_name }}</label>
+    <select id="edPeriod" name="edPeriod" onchange="changeDates()">
+        <option value="period1">{{ year.period_name }} 1</option>
+        <option value="period2">{{ year.period_name }} 2</option>
+        <option value="custom">Elegir</option>
+    </select>
+
+    <br/>
+
+    <label for="edDateBegin">Fecha inicio </label>
+    <input type="date" id="edDateBegin" name="edDateBegin" required="required"
+            value="{{ reserve.date_begin }}" />
+
+    <label for="edDateEnd">Fecha final </label>
+    <input type="date" id="edDateEnd" name="edDateEnd" required="required"
+            value="{{ reserve.date_end }}" />
+
+    <br/>
+
+    <label for="edTimeBegin">Hora inicio </label>
+    <input type="time" id="edTimeBegin" name="edTimeBegin" required="required"
+            value="{{ reserve.time_begin }}" />
+
+    <label for="edTimeEnd">Hora final </label>
+    <input type="time" id="edTimeEnd" name="edTimeEnd" required="required"
+            value="{{ reserve.time_end }}" />
+
+    <br/>
+
+    <label for="edNotes">Notas </label>
+    <input type="text" id="edNotes" name="edNotes"
+            size="80"
+            value="{{ reserve.notes }}"
+            placeholder="notas" />
+
+    <br/>
+
+    <label for="chkChekClashes">Comprobar colisiones</label>
+    <input type="checkbox" id="chkChekClashes" name="chkChekClashes"
+           checked>
+    <br/>
+
+    <label for="chkCopy">Duplicar esta reserva (no modificarla)</label>
+    <input type="checkbox" id="chkCopy" name="chkCopy">
+    <br/>
+
+    <a href="#" onclick="if ( chk() ) frmEditReserve.submit()">
+        <img height="32px" width="32px" src="/res/modify.svg"
+             alt="Modificar" title="Modificar"
+             class="styled-button" />
+    </a>
+
+    <p align="right">
+        <a href="#" onclick="window.location='/reserves/delete?id={{ reserve.key.urlsafe() }}'">
+            <img width="32px" height="32px" alt="Borrar reserva" title="Borrar reserva"
+                 style="background: orangered" class="styled-button"
+                 src="/res/delete.svg">
+        </a>
+    </p>
+</form>
+
+<div id="dvError">
+</div>
+{% endblock %}

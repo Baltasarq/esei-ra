@@ -1,0 +1,62 @@
+{% extends "skeleton.html" %}
+{% block content %}
+
+<h2>Aula: {{ classroom.name }}</h2>
+<form id="frmEditClassroom"
+      method="POST"
+      action="/classrooms/modify?id={{ classroom.key.urlsafe() }}">
+
+    <label for="edName">Nombre </label>
+    <input type="text" id="edName" name="edName" required="required"
+            onblur="javascript: edAbbrev.value = edName.value"
+            size="10"
+            value="{{ classroom.name }}"
+            placeholder="nombre" />
+
+
+
+    <label for="edPract">Tipo </label>
+    <select id="edPract" name="edPract">
+        <option value="False"
+                {% if classroom.pract %} selected {% endif %} >Teoría</option>
+        <option value="True"
+                {% if classroom.pract %} selected {% endif %} >Prácticas</option>
+    </select>
+
+    <br/>
+
+    <label for="edAbbrev">Abreviatura</label>
+    <input type="text" id="edAbbrev" name="edAbbrev" required="required"
+            size="10"
+            value="{{ classroom.abbrev }}"
+            placeholder="abreviatura" />
+
+    <label for="edPax">Pax </label>
+    <input type="number" id="edPax" name="edPax" required="required"
+            min="1"
+            style="width: 80px"
+            value="{{ classroom.pax }}"/>
+
+    <br/>
+
+    <label for="edBuilding">Edificio </label>
+    <input type="text" id="edBuilding" name="edBuilding" required="required"
+            size="10"
+            value="{{ classroom.building }}"
+            placeholder="edificio" />
+
+    <label for="edFloor">Piso </label>
+    <input type="number" id="edFloor" name="edFloor" required="required"
+            style="width: 80px"
+            value="{{ classroom.floor }}"/>
+
+    <br/>
+
+    <a href="#" onclick="frmEditClassroom.submit()">
+        <img height="32px" width="32px" src="/res/modify.svg"
+             alt="Modificar" title="Modificar"
+             class="styled-button" />
+    </a>
+</form>
+
+{% endblock %}

@@ -1,0 +1,103 @@
+#application: esei-ra
+#version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /templates
+  static_dir: templates
+  application_readable: true
+
+- url: /res
+  static_dir: res
+
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /error
+  script: handlers.error.app
+
+- url: /courses/manage
+  script: handlers.courses.manage.app
+  login: admin
+
+- url: /courses/delete
+  script: handlers.courses.delete.app
+  login: admin
+
+- url: /courses/modify
+  script: handlers.courses.modify.app
+  login: admin
+
+- url: /subjects/manage
+  script: handlers.subjects.manage.app
+  login: admin
+
+- url: /subjects/delete
+  script: handlers.subjects.delete.app
+  login: admin
+
+- url: /subjects/add
+  script: handlers.subjects.add.app
+  login: admin
+
+- url: /subjects/modify
+  script: handlers.subjects.modify.app
+  login: admin
+
+- url: /classrooms/manage
+  script: handlers.classrooms.manage.app
+  login: admin
+
+- url: /classrooms/delete
+  script: handlers.classrooms.delete.app
+  login: admin
+
+- url: /classrooms/add
+  script: handlers.classrooms.add.app
+  login: admin
+
+- url: /classrooms/modify
+  script: handlers.classrooms.modify.app
+  login: admin
+
+- url: /reserves/download_csv
+  script: handlers.reserves.download_csv.app
+
+- url: /reserves/download_xls
+  script: handlers.reserves.download_xls.app
+
+- url: /reserves/manage
+  script: handlers.reserves.manage.app
+  login: admin
+
+- url: /reserves/delete
+  script: handlers.reserves.delete.app
+  login: admin
+
+- url: /reserves/add
+  script: handlers.reserves.add.app
+  login: admin
+
+- url: /reserves/modify
+  script: handlers.reserves.modify.app
+  login: admin
+
+- url: /reserves/wipe
+  script: handlers.reserves.wipe.app
+  login: admin
+
+- url: /year_management
+  script: handlers.year_management.app
+  login: admin
+
+- url: /
+  script: handlers.main.app
+
+libraries:
+- name: webapp2
+  version: "2.5.2"
+- name: jinja2
+  version: latest

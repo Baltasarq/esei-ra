@@ -1,0 +1,27 @@
+{% extends "skeleton.html" %}
+{% block content %}
+    <h2>Reservas en conflicto</h2>
+        <div id="dvActions" class="clsMenu">
+            <a href="#" onclick="window.history.back()">
+                <img height="32px" width="32px" src="/res/back.svg"
+                     class="styled-button"
+                     alt="Volver" title="Volver" />
+            </a>
+        </div>
+
+    <table id="tblEntries">
+        {% for reserve in reserves %}
+            <tr class="tblEntryRow">
+            <td>
+                <a href="#" onclick="window.location.href='/reserves/modify?id={{ reserve.key.urlsafe() }}'">
+                    <img width="16px" height="16px" alt="Modificar" title="Modificar" src="/res/modify.svg">
+                </a>
+                <a href="#" onclick="window.location.href='/reserves/delete?id={{ reserve.key.urlsafe() }}'">
+                    <img width="16px" height="16px" alt="Borrar" title="Borrar" src="/res/delete.svg">
+                </a>
+            </td>
+            {% include "reserve_entry.html" %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "skeleton.html" %}
+{% block content %}
+
+<script type="application/javascript">
+    function clearErrors()
+    {
+        const dvError = document.getElementById( "dvError" );
+
+        dvError.style.display = "hide";
+    }
+
+    function showError(msg)
+    {
+        const dvError = document.getElementById( "dvError" );
+
+        dvError.innerHTML = "<p>" + msg + "</p>";
+        dvError.style.display = "block";
+    }
+
+    function chk()
+    {
+        const strPeriod1Begin = document.getElementById( "edPeriod1Begin" ).value;
+        const strPeriod1End = document.getElementById( "edPeriod1End" ).value;
+        const strPeriod2Begin = document.getElementById( "edPeriod2Begin" ).value;
+        const strPeriod2End = document.getElementById( "edPeriod2End" ).value;
+        const strTimeBegin = document.getElementById( "edTimeBegin" ).value;
+        const strTimeEnd = document.getElementById( "edTimeEnd" ).value;
+        const strTimeDelta = document.getElementById( "edTimeDelta" ).value;
+
+        let period1Begin = null;
+        let period1End = null;
+        let period2Begin = null;
+        let period2End = null;
+        let timeBegin = null;
+        let timeEnd = null;
+        let timeDelta = 0;
+        let toret = true;
+
+        clearErrors();
+
+        // Parse
+        try {
+            period1Begin = new Date( strPeriod1Begin  + "T00:00:00Z" );
+            period1End = new Date( strPeriod1End + "T00:00:00Z" );
+            period2Begin = new Date( strPeriod2Begin + "T00:00:00Z" );
+            period2End = new Date( strPeriod2End + "T00:00:00Z" );
+            timeBegin = new Date( "2001-01-01T" + strTimeBegin )
+            timeEnd = new Date( "2001-01-01T" + strTimeEnd )
+            timeDelta = parseInt(strTimeDelta)
+        } catch(e) {
+            toret = false;
+            showError( "Convirtiendo cadenas: " + e.toString() );
+        }
+
+        // Verify
+        if ( !( period1End > period1Begin ) ) {
+            showError( "Final del primer período debe ser mayor que el comienzo" );
+            toret = false;
+        }
+
+        if ( !( period2End > period2Begin ) ) {
+            showError( "Final del segundo período debe ser mayor que el comienzo" );
+            toret = false;
+        }
+
+        if ( !( period2Begin > period1End ) ) {
+            showError( "Comienzo del segundo período debe ser mayor que el final del primero" );
+            toret = false;
+        }
+
+        return toret;
+    }
+</script>
+
+<h2>Año: {{ year.name }}</h2>
+<form id="frmEditYear"
+      onsubmit="return chk()"
+      method="POST"
+      action="/year_management">
+
+    <label for="edName">Nombre </label>
+    <input type="text" id="edName" name="edName" required="required"
+            value="{{ year.name }}"
+            placeholder="2000/01" />
+
+    <br/>
+
+    <label for="edPeriodName">Nombre períodos </label>
+    <input type="text" id="edPeriodName" name="edPeriodName" required="required"
+            value="{{ year.period_name }}"
+            placeholder="cuatrimestre" />
+
+    <br/>
+
+    <label for="edPeriod1Begin">Comienzo período 1 </label>
+    <input type="date" id="edPeriod1Begin" name="edPeriod1Begin" required="required"
+            value="{{ year.period1_begin }}"/>
+
+    <label for="edPeriod1End">Final período 1 </label>
+    <input type="date" id="edPeriod1End" name="edPeriod1End" required="required"
+            value="{{ year.period1_end }}"/>
+
+    <br/>
+
+    <label for="edPeriod2Begin">Comienzo período 2 </label>
+    <input type="date" id="edPeriod2Begin" name="edPeriod2Begin" required="required"
+            value="{{ year.period2_begin }}"/>
+
+    <label for="edPeriod2End">Final período 2 </label>
+    <input type="date" id="edPeriod2End" name="edPeriod2End" required="required"
+            value="{{ year.period2_end }}"/>
+
+    <br/>
+
+    <label for="edTimeBegin">Comienzo horario </label>
+    <input type="time" id="edTimeBegin" name="edTimeBegin" required="required"
+            value="{{ year.time_begin }}"/>
+
+    <label for="edTimeBegin">Final horario </label>
+    <input type="time" id="edTimeEnd" name="edTimeEnd" required="required"
+            value="{{ year.time_end }}"/>
+
+    <br/>
+
+    <label for="edTimeDelta">Separación entre horas en el horario </label>
+    <input type="number" id="edTimeDelta" name="edTimeDelta" required="required"
+            min="10"
+            style="width: 80px"
+            value="{{ year.time_delta }}"/> min.
+
+    <br/>
+
+    <label for="chkMoveExistingReserves">Desplazar reservas ya existentes</label>
+    <input type="checkbox" id="chkMoveExistingReserves" name="chkMoveExistingReserves"/>
+
+    <br/>
+
+    <a href="#" onclick="if ( chk() ) frmEditYear.submit();">
+        <img height="32px" width="32px" src="/res/modify.svg"
+             alt="Modificar" title="Modificar"
+             class="styled-button" />
+    </a>
+</form>
+
+<div id="dvError">
+</div>
+{% endblock %}

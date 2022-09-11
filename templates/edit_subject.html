@@ -1,0 +1,44 @@
+{% extends "skeleton.html" %}
+{% block content %}
+
+<h2>Asignatura: {{ subject.get_abbrev_form() }}</h2>
+<form id="frmEditSubject"
+      method="POST"
+      action="/subjects/modify?id={{ subject.key.urlsafe() }}">
+
+    <label for="edName">Nombre </label>
+    <input type="text" id="edName" name="edName" required="required"
+            value="{{ subject.name }}"
+            placeholder="nombre" />
+
+    <label for="edAbbrev">Abreviatura </label>
+    <input type="text" id="edAbbrev" name="edAbbrev" required="required"
+            size="10"
+            value="{{ subject.abbrev }}"
+            placeholder="abreviatura" />
+
+    <br/>
+
+    <label for="edOwnerEmail">Responsable </label>
+    <input type="text" id="edOwnerEmail" name="edOwnerEmail" required="required"
+            value="{{ subject.owner_email  }}"/>
+
+    <label for="edCourse">Curso </label>
+    <select id="edCourse" name="edCourse">
+        {% for course in all_courses %}
+            <option value="{{ course.key.urlsafe() }}"
+                {% if course.key == course_of_subject.key %} selected {% endif %}>
+                {{ course.get_abbrev_form() }}: {{ course.level }} {{ course.studies_name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <br/>
+    <a href="#" onclick="frmEditSubject.submit()">
+        <img height="32px" width="32px" src="/res/modify.svg"
+             alt="Modificar" title="Modificar"
+             class="styled-button" />
+    </a>
+</form>
+
+{% endblock %}

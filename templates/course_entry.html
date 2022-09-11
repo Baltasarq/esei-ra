@@ -1,0 +1,10 @@
+<td>
+    {{ course.level }}
+</td>
+<td>
+    {{ course.studies_name }}
+</td>
+<td>
+    {% set course_bk_color = course.bk_color if course.bk_color else "#808080" %}
+    <span style="background-color: {{ course_bk_color }}">{{ course.get_abbrev_form() }}</span>
+</td>

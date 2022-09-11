@@ -1,0 +1,85 @@
+{% extends "skeleton.html" %}
+{% block content %}
+    <script type="application/javascript">
+        function askForConfirmation()
+        {
+            if ( confirm( "¿Está seguro? ¡¡Se eliminarán todas las reservas!!" ) ) {
+                window.location.href = "/reserves/wipe";
+            }
+        }
+    </script>
+
+    <h2>Reservas</h2>
+        <div id="dvActions" class="clsMenu">
+            <a href="#" onclick="window.location.href='/'">
+                <img height="32px" width="32px" src="/res/back.svg"
+                     class="styled-button"
+                     alt="Volver" title="Volver" />
+            </a>
+            <br/>
+            <a href="#" onclick="window.location.href='/reserves/add'">
+                <img height="32px" width="32px" src="/res/add.svg"
+                     class="styled-button"
+                     alt="Añadir" title="Añadir" />
+            </a>
+            <br/>
+            <a href="#" onclick="askForConfirmation()">
+                <img width="32px" height="32px" alt="Borrar todas" title="Borrar todas"
+                     style="background: orangered" class="styled-button"
+                     src="/res/delete.svg">
+            </a>
+        </div>
+
+    {% set one_reserve_found = { 'is': False } %}
+
+    <table id="tblEntries">
+    {% for classroom in classrooms %}
+        {% set reserves_per_classroom = Reserve.query(Reserve.classroom_key == classroom.key) %}
+
+        {% if reserves_per_classroom.count() > 0 %}
+            <tr><td colspan="4"><b>{{ classroom.name }} - {{ classroom.building }} {{ classroom.floor }}º</b></td></tr>
+            {% for reserve in reserves_per_classroom %}
+                {% if one_reserve_found.update({'is': True}) %}{% endif %}
+
+                <tr class="tblEntryRow">
+                <td>
+                    <a href="#" onclick="window.location.href='/reserves/modify?id={{ reserve.key.urlsafe() }}'">
+                        <img width="16px" height="16px" alt="Modificar" title="Modificar" src="/res/modify.svg">
+                    </a>
+                    <a href="#" onclick="window.location.href='/reserves/delete?id={{ reserve.key.urlsafe() }}'">
+                        <img width="16px" height="16px" alt="Borrar" title="Borrar" src="/res/delete.svg">
+                    </a>
+                </td>
+                {% include "reserve_entry.html" %}
+                </tr>
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        <tr><td colspan="3">No hay aulas registradas.</td></tr>
+    {% endfor %}
+
+    <!-- Reserves orphaned by subject or classroom -->
+    {% if orphaned_reserves %}
+        <h2>Orphaned reserves</h2>
+        {% for reserve in orphaned_reserves %}
+            {% if one_reserve_found.update({'is': True}) %}{% endif %}
+
+            <tr class="tblEntryRow">
+            <td>
+                <a href="#" onclick="window.location.href='/reserves/modify?id={{ reserve.key.urlsafe() }}'">
+                    <img width="16px" height="16px" alt="Modificar" title="Modificar" src="/res/modify.svg">
+                </a>
+                <a href="#" onclick="window.location.href='/reserves/delete?id={{ reserve.key.urlsafe() }}'">
+                    <img width="16px" height="16px" alt="Borrar" title="Borrar" src="/res/delete.svg">
+                </a>
+            </td>
+            {% include "reserve_entry.html" %}
+            </tr>
+        {% endfor %}
+    {% endif %}
+
+    {% if not one_reserve_found['is'] %}
+        <tr><td colspan="3">No hay reservas registradas.</td></tr>
+    {% endif %}
+    </table>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "skeleton.html" %}
+{% block content %}
+    <h2>Asignaturas</h2>
+        <div id="dvActions" class="clsMenu">
+            <a href="#" onclick="window.location.href='/'">
+                <img height="32px" width="32px" src="/res/back.svg"
+                     alt="Volver" title="Volver"
+                     class="styled-button" />
+            </a>
+            <br/>
+            <a href="#" onclick="window.location.href='/subjects/add'">
+                <img height="32px" width="32px" src="/res/add.svg"
+                     alt="Insertar" title="Insertar"
+                     class="styled-button" />
+            </a>
+        </div>
+
+    {% set one_subject_found = { 'is': False } %}
+
+    <table id="tblEntries">
+    {% for course in courses %}
+        {% set subjects_per_course = Subject.query(Subject.course_key == course.key).order(Subject.name) %}
+
+        {% if subjects_per_course.count() > 0 %}
+            <tr><td colspan="4"><b>{{ course.__str__() }}</b></td></tr>
+            {% for subject in subjects_per_course %}
+                {% if one_subject_found.update({'is': True}) %}{% endif %}
+
+                <tr class="tblEntryRow">
+                <td>
+                    <a href="#" onclick="window.location.href='/subjects/modify?id={{ subject.key.urlsafe() }}'">
+                        <img width="16px" height="16px" alt="Modificar" title="Modificar" src="/res/modify.svg">
+                    </a>
+                    <a href="#" onclick="window.location.href='/subjects/delete?id={{ subject.key.urlsafe() }}'">
+                        <img width="16px" height="16px" alt="Borrar" title="Borrar" src="/res/delete.svg">
+                    </a>
+                </td>
+                {% include "subject_entry.html" %}
+                </tr>
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        <tr><td colspan="3">No hay cursos registrados.</td></tr>
+    {% endfor %}
+
+    <!-- Subjects orphaned by course -->
+    {% if orphaned_subjects %}
+        <h2>Orphaned subjects</h2>
+        {% for subject in orphaned_subjects %}
+            {% if one_subject_found.update({'is': True}) %}{% endif %}
+
+            <tr class="tblEntryRow">
+            <td>
+                <a href="#" onclick="window.location.href='/subjects/modify?id={{ subject.key.urlsafe() }}'">
+                    <img width="16px" height="16px" alt="Modificar" title="Modificar" src="/res/modify.svg">
+                </a>
+                <a href="#" onclick="window.location.href='/subjects/delete?id={{ subject.key.urlsafe() }}'">
+                    <img width="16px" height="16px" alt="Borrar" title="Borrar" src="/res/delete.svg">
+                </a>
+            </td>
+            {% include "subject_entry.html" %}
+            </tr>
+        {% endfor %}
+    {% endif %}
+
+    {% if not one_subject_found['is'] %}
+        <tr><td colspan="3">No hay asignaturas registradas.</td></tr>
+    {% endif %}
+    </table>
+{% endblock %}

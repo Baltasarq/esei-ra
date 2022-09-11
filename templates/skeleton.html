@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" href="/templates/styles.css">
+	<title>{{ info.Name }}</title>
+    <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+</head>
+<body>
+<!-- Generate login/logout URL -->
+{% set user_is_admin = users.is_current_user_admin() %}
+
+{% if usr %}
+    {% set login_logout_url = users.create_logout_url("/") %}
+{% else %}
+    {% set login_logout_url = users.create_login_url("/") %}
+{% endif %}
+
+<div id="dvHeader">
+    <table width="100%" style="margin: 10px">
+        <tr>
+            <td width="5%"><img alt="{{ info.Title }}" height="64px" width="64px" src="/res/classroom.svg"></td>
+            <td width="20%" style="text-align: center">
+                <a href="{{ login_logout_url }}">
+                    {% if usr %}
+                        logout {{ usr.nickname() }}
+                    {% else %}
+                        login
+                    {% endif %}
+                </a>
+            </td>
+            <td width="70%" style="text-align: center"><h1>{{ info.Title }}</h1></td>
+        </tr>
+    </table>
+    <p align="right">
+        {% if user_is_admin %}
+            <a href="/"><b>Calendario</b></a>
+            <a href="/year_management"><b>Año ac.</b></a>
+            <a href="/courses/manage"><b>Cursos</b></a>
+            <a href="/subjects/manage"><b>Asignaturas</b></a>
+            <a href="/classrooms/manage"><b>Aulas</b></a>
+            <a href="/reserves/manage"><b>Reservas</b></a>
+        {% endif %}
+    </p>
+</div>
+<div id="dvContainer">
+    <div id="dvContents">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+</body>
+</html>

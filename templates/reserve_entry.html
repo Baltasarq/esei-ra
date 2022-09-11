@@ -1,0 +1,40 @@
+<td width="25%">
+    {% if reserve.subject_key %}
+    <a href="/subjects/modify?id={{ reserve.subject_key.urlsafe() }}">
+    {% endif %}
+        <b>{{ reserve.get_abbrev_form() }}</b>
+    {% if reserve.subject_key %}
+    </a>
+    {% endif %}
+</td>
+<td width="15%">
+    {{ reserve.date_begin }}
+</td>
+<td width="15%">
+    {{ reserve.date_end }}
+</td>
+<td width="10%">
+    {{ reserve.time_begin.strftime("%02H:%02M") }}
+</td>
+<td width="10%">
+    {{ reserve.time_end.strftime("%02H:%02M") }}
+</td>
+<td width="8%">
+    {{ reserve.get_day_of_week_as_str() }}
+</td>
+<td width="10%">
+    {% set classroom = reserve.get_classroom() %}
+
+    {% if classroom.key %}
+    <a href="/classrooms/modify?id={{ classroom.key.urlsafe() }}">
+    {% endif %}
+        {{ classroom.name }}
+    {% if classroom.key %}
+    </a>
+    {% endif %}
+</td>
+</tr>
+<tr class="tblEntryRow">
+<td colspan="7">
+    {{ reserve.notes }}
+</td>

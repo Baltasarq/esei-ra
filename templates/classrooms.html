@@ -1,0 +1,35 @@
+{% extends "skeleton.html" %}
+{% block content %}
+    <h2>Aulas</h2>
+        <div id="dvActions" class="clsMenu">
+            <a href="#" onclick="window.location.href='/'">
+                <img height="32px" width="32px" src="/res/back.svg"
+                     alt="Volver" title="Volver"
+                     class="styled-button" />
+            </a>
+            <br/>
+            <a href="#" onclick="window.location.href='/classrooms/add'">
+                <img height="32px" width="32px" src="/res/add.svg"
+                     alt="Insertar" title="Insertar"
+                     class="styled-button" />
+            </a>
+        </div>
+
+    <table id="tblEntries">
+    {% for classroom in classrooms %}
+        <tr class="tblEntryRow">
+        <td>
+            <a href="#" onclick="window.location.href='/classrooms/modify?id={{ classroom.key.urlsafe() }}'">
+                <img width="16px" height="16px" alt="Modificar" title="Modificar" src="/res/modify.svg">
+            </a>
+            <a href="#" onclick="window.location.href='/classrooms/delete?id={{ classroom.key.urlsafe() }}'">
+                <img width="16px" height="16px" alt="Borrar" title="Borrar" src="/res/delete.svg">
+            </a>
+        </td>
+        {% include "classroom_entry.html" %}
+        </tr>
+    {% else %}
+        No hay aulas registradas.
+    {% endfor %}
+    </table>
+{% endblock %}
