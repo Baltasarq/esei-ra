@@ -169,7 +169,7 @@
                                 <a  href="javascript: void();"
                                     onclick="commuteVisibility('cell:{{ id }}:{{ hour }}')"
                                     style="background-color: {{ course_bk_color }}">
-                                    {{ reserve.name }}
+                                    &nbsp;{{ reserve.name }}&nbsp;
                                 </a>
                                 <span id="cell:{{ id }}:{{ hour }}" style="display: none">
                                     <a href="reserves/modify?id={{ reserve.key.urlsafe() }}">
