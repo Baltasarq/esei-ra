@@ -5,6 +5,6 @@
 class AppInfo:
     Name = "esei-ra"
     Title = "ESEI - RA"
-    Version = "20190008-0101"
+    Version = "20220913-0101"
     Author = "contact@baltasarq.info"
     Web = "http://baltasarq.info/"

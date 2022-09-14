@@ -137,7 +137,12 @@
 <form id="frmEditReserve"
       method="POST"
       onsubmit="return chk()"
-      action="/reserves/modify?id={{ reserve.key.urlsafe() }}">
+        {%- if reserve.key -%}
+          action="/reserves/modify?id={{ reserve.key.urlsafe() }}"
+        {%- else -%}
+            action="/reserves/modify"
+        {%- endif -%}
+      >
 
     <label for="edName">Nombre </label>
     <input type="text" id="edName" name="edName" required="required"
@@ -234,13 +239,15 @@
              class="styled-button" />
     </a>
 
-    <p align="right">
-        <a href="#" onclick="window.location='/reserves/delete?id={{ reserve.key.urlsafe() }}'">
-            <img width="32px" height="32px" alt="Borrar reserva" title="Borrar reserva"
-                 style="background: orangered" class="styled-button"
-                 src="/res/delete.svg">
-        </a>
-    </p>
+    {%- if reserve.key -%}
+        <p align="right">
+            <a href="#" onclick="window.location='/reserves/delete?id={{ reserve.key.urlsafe() }}'">
+                <img width="32px" height="32px" alt="Borrar reserva" title="Borrar reserva"
+                    style="background: orangered" class="styled-button"
+                    src="/res/delete.svg">
+            </a>
+        </p>
+    {%- endif -%}
 </form>
 
 <div id="dvError">

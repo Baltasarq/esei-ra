@@ -77,6 +77,16 @@ class Reserve(ndb.Model):
 
         matches_week_day = self.is_a_match_for_week_day(date.isoweekday())
         return matches_week_day and (self.date_begin <= date <= self.date_end)
+        
+    def __str__(self):
+        classroom = self.get_classroom()
+        subject = self.get_subject()
+        return "[Reserve '" + self.name + "' " + self.get_day_of_week_as_str() \
+                + "\n\tdate begin: " + str(self.date_begin) + " time begin: " + str(self.time_begin) \
+                + "\n\tdate end: " + str(self.date_end) + " time end: " + str(self.time_end) \
+                + "\n\tclassroom: " + classroom.name \
+                + "\n\tsubject: " + subject.name \
+                + "]"
 
     @staticmethod
     def retrieve(handler):
@@ -86,9 +96,9 @@ class Reserve(ndb.Model):
         if id:
             reserve = ndb.Key(urlsafe=id).get()
             if not reserve:
-                handler.redirect("/error?msg=No course for id: " + str(id))
+                handler.redirect("/error?msg=No reserve for id: " + str(id))
         else:
-            handler.redirect("/error?msg=Missing course id.")
+            handler.redirect("/error?msg=Missing reserve id.")
 
         return reserve
 

@@ -12,6 +12,7 @@ from google.appengine.ext import ndb
 
 from model.reserve import Reserve
 from model.year import Year
+from modify import ModifyReserveHandler
 
 
 class AddReserveHandler(webapp2.RequestHandler):
@@ -27,19 +28,17 @@ class AddReserveHandler(webapp2.RequestHandler):
         classroom_id = self.request.GET.get("classroom_id")
         str_hour = self.request.GET.get("hour")
 
-        classroom_key = None
         if classroom_id:
             try:
                 classroom_key = ndb.Key(urlsafe=classroom_id)
             except:
-                pass
+                classroom_key = None
 
-        hour = datetime(2001, 1, 1, 9, 0, 0)
         if str_hour:
             try:
                 hour = datetime.strptime(str_hour, "%H:%M")
-            except ValueError:
-                pass
+            except:
+                hour = datetime(2001, 1, 1, 9, 0, 0)
 
         hour_end = hour + timedelta(hours=1)
 
@@ -47,7 +46,7 @@ class AddReserveHandler(webapp2.RequestHandler):
         str_date = self.request.GET.get("date")
 
         if str_date:
-            date_begin = datetime.strptime(str_date, "%Y-%m-%d")
+            date_begin = datetime.strptime(str_date, "%Y-%m-%d").date()
             date_end = date_begin + timedelta(days=1)
         else:
             # Determine probable date
@@ -66,23 +65,18 @@ class AddReserveHandler(webapp2.RequestHandler):
                     date_begin = year.period2_begin
                     date_end = year.period2_end
 
-        # Create the new reserve
-        try:
-            reserve = Reserve(
-                        name="Undefined",
-                        date_begin=date_begin,
-                        date_end=date_end,
-                        time_begin=hour.time(),
-                        time_end=hour_end.time(),
-                        week_day=date_begin.isoweekday(),
-                        subject_key=None,
-                        classroom_key=classroom_key)
+        # Create the new reserve and edit it
+        reserve = Reserve(
+                    name="Undefined",
+                    date_begin=date_begin,
+                    date_end=date_end,
+                    time_begin=hour.time(),
+                    time_end=hour_end.time(),
+                    week_day=date_begin.isoweekday(),
+                    subject_key=None,
+                    classroom_key=classroom_key)
 
-            key = reserve.put()
-            return self.redirect("/reserves/modify?id=" + key.urlsafe())
-        except Exception as e:
-            logging.error("adding a reserve", str(e))
-            self.response.write("ERROR: " + str(e))
+        ModifyReserveHandler.edit_reserve(self, usr, reserve)
 
 
 app = webapp2.WSGIApplication([

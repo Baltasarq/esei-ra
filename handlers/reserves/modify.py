@@ -20,6 +20,25 @@ from model.year import Year
 
 
 class ModifyReserveHandler(webapp2.RequestHandler):
+    @staticmethod
+    def edit_reserve(self, usr, reserve):
+        # Render edit reserve template
+        template_values = {
+            "usr": usr,
+            "users": users,
+            "info": AppInfo,
+            "classrooms": Classroom.query().order(Subject.name),
+            "subjects": Subject.query().order(Subject.name),
+            "Reserve": Reserve,
+            "reserve": reserve,
+            "subject_of_reserve": reserve.get_subject(),
+            "classroom_of_reserve": reserve.get_classroom(),
+            "year": Year.retrieve()
+        }
+
+        jinja = jinja2.get_jinja2(app=self.app)
+        self.response.write(jinja.render_template("edit_reserve.html", **template_values))
+        
     def get(self):
         # Get the usr
         usr = users.get_current_user()
@@ -28,29 +47,9 @@ class ModifyReserveHandler(webapp2.RequestHandler):
          or not users.is_current_user_admin()):
             return self.redirect("/error?msg=No eres admin.")
 
-        # Retrieve reserve
+        # Retrieve reserve and edit it
         reserve = Reserve.retrieve(self)
-
-        # Render year
-        try:
-            template_values = {
-                "usr": usr,
-                "users": users,
-                "info": AppInfo,
-                "classrooms": Classroom.query().order(Subject.name),
-                "subjects": Subject.query().order(Subject.name),
-                "Reserve": Reserve,
-                "reserve": reserve,
-                "subject_of_reserve": reserve.get_subject(),
-                "classroom_of_reserve": reserve.get_classroom(),
-                "year": Year.retrieve()
-            }
-
-            jinja = jinja2.get_jinja2(app=self.app)
-            self.response.write(jinja.render_template("edit_reserve.html", **template_values));
-        except Exception as e:
-            logging.error("editing reserve", str(e))
-            self.response.write("ERROR: " + str(e))
+        ModifyReserveHandler.edit_reserve(self, usr, reserve)
 
     def post(self):
         # Get the usr
@@ -75,10 +74,11 @@ class ModifyReserveHandler(webapp2.RequestHandler):
             notes = self.request.get("edNotes", "").strip()
 
             # Get the reserve
-            if str_chk_copy:
-                reserve = Reserve()
-            else:
+            if (str_chk_copy != "on"
+            and self.request.GET.get("id")):
                 reserve = Reserve.retrieve(self)
+            else:
+                reserve = Reserve()
 
             # Verify
             if not name:
