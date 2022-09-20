@@ -69,43 +69,44 @@
 
     <table width="100%">
         <tr>
-        <td>
-        <label for="edPeriod">{{ year.period_name }} </label>
-        <select id="edPeriod" onchange="changeDate(); reloadToApplyFilters()">
-            <option value="custom">Elige</option>
-            <option value="period1">{{ year.period_name }} 1</option>
-            <option value="period2">{{ year.period_name }} 2</option>
-        </select>
+        <td style="margin-right: 5px">
+            <label for="edPeriod">{{ year.period_name }} </label>
+            <select id="edPeriod" onchange="changeDate(); reloadToApplyFilters()">
+                <option value="custom">Elige</option>
+                <option value="period1">{{ year.period_name }} 1</option>
+                <option value="period2">{{ year.period_name }} 2</option>
+            </select>
+        </td>
 
-        <label for="edDate">Fecha</label>
-        <input type="date" id="edDate" name="edDate"
-                value="{{ today.date().isoformat() }}"
-                onchange="reloadToApplyFilters()">
+        <td style="margin-left: 5px;text-align: left">
+            <label for="edDate">Fecha</label>
+            <input type="date" id="edDate" name="edDate"
+                    value="{{ today.date().isoformat() }}"
+                    onchange="reloadToApplyFilters()">
+        </td>
 
-        <br>
-
-        <label for="edMode">Tipo de aula</label>
-        <select id="edMode" onchange="reloadToApplyFilters()">
-            <option value="ALL"
-                {% if mode == None %} selected {% endif %}>Todas</option>
-            <option value="T"
-                {% if mode == False %} selected {% endif %}>Teoría</option>
-            <option value="P"
-                {% if mode %} selected {% endif %}>Prácticas</option>
-        </select>
-
-        <br/>
-
-        <label>Días de la semana</label>
-        {% for i in range(1, 8) %}
-            {% if i != today.isoweekday() %}
-                <button id="btDay" onclick="reloadToApplyFilters( '{{ str_week_dates[i - 1] }}' )">
-                    {{ Reserve.WEEK_DAYS[ i ] }}</button>
-            {% else %}
-                {{ Reserve.WEEK_DAYS[ i ] }}
-            {% endif %}
-        {% endfor %}
-
+        <tr>
+        <td style="margin-right: 5px">
+            <label>Días de la semana</label>
+            {% for i in range(1, 8) %}
+                {% if i != today.isoweekday() %}
+                    <button id="btDay" onclick="reloadToApplyFilters( '{{ str_week_dates[i - 1] }}' )">
+                        {{ Reserve.WEEK_DAYS[ i ] }}</button>
+                {% else %}
+                    {{ Reserve.WEEK_DAYS[ i ] }}
+                {% endif %}
+            {% endfor %}
+        </td>
+        <td style="margin-left: 5px;text-align: left">
+            <label for="edMode">Tipo de aula</label>
+            <select id="edMode" onchange="reloadToApplyFilters()">
+                <option value="ALL"
+                    {% if mode == None %} selected {% endif %}>Todas</option>
+                <option value="T"
+                    {% if mode == False %} selected {% endif %}>Teoría</option>
+                <option value="P"
+                    {% if mode %} selected {% endif %}>Prácticas</option>
+            </select>
         </td>
         </tr>
     </table>
