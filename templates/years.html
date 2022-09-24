@@ -1,0 +1,35 @@
+{% extends "skeleton.html" %}
+{% block content %}
+    <h2>Años academicos</h2>
+        <div id="dvActions" class="clsMenu">
+            <a href="#" onclick="window.location.href='/'">
+                <img height="32px" width="32px" src="/res/back.svg"
+                     alt="Volver" title="Volver"
+                     class="styled-button" />
+            </a>
+            <br/>
+            <a href="#" onclick="window.location.href='/years/add'">
+                <img height="32px" width="32px" src="/res/add.svg"
+                     alt="Insertar" title="Insertar"
+                     class="styled-button" />
+            </a>
+        </div>
+
+        <table id="tblEntries">
+        {% for year in years %}
+                <tr class="tblEntryRow">
+                <td>
+                    <a href="#" onclick="window.location.href='/years/modify?id={{ year.key.urlsafe() }}'">
+                        <img width="16px" height="16px" alt="Modificar" title="Modificar" src="/res/modify.svg">
+                    </a>
+                    <a href="#" onclick="window.location.href='/years/delete?id={{ subject.key.urlsafe() }}'">
+                        <img width="16px" height="16px" alt="Borrar" title="Borrar" src="/res/delete.svg">
+                    </a>
+                </td>
+                {% include "year_entry.html" %}
+                </tr>
+        {% else %}
+            <tr><td colspan="3">No hay años academicos registrados.</td></tr>
+        {% endfor %}
+        </table>
+{% endblock %}

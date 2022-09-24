@@ -89,8 +89,8 @@ handlers:
   script: handlers.reserves.wipe.app
   login: admin
 
-- url: /year_management
-  script: handlers.year_management.app
+- url: /years/manage
+  script: handlers.years.manage.app
   login: admin
 
 - url: /

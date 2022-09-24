@@ -15,7 +15,7 @@ from model.year import Year
 from model.reserve import Reserve
 
 
-class YearManagementHandler(webapp2.RequestHandler):
+class YearEditHandler(webapp2.RequestHandler):
     def get(self):
         # Get the usr
         usr = users.get_current_user()
@@ -173,5 +173,5 @@ class YearManagementHandler(webapp2.RequestHandler):
 
 
 app = webapp2.WSGIApplication([
-    ('/year_management', YearManagementHandler)
+    ('/years/edit', YearEditHandler)
 ], debug=True)
